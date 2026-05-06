@@ -222,6 +222,9 @@ def build_admin_broadcast_router(app: AppContext, bot: Bot) -> Router:
             reply_markup=_preview_controls_markup(broadcast_id),
         )
 
+    def _message_html_value(message: Message) -> str:
+        return (message.html_text or message.text or "").strip()
+
     async def _save_preview(target: Message | CallbackQuery, state: FSMContext, admin_id: int) -> None:
         payload = await _payload_from_state(state)
         data = await state.get_data()
@@ -343,7 +346,7 @@ def build_admin_broadcast_router(app: AppContext, bot: Bot) -> Router:
         if not _guard(message.from_user.id):
             await state.clear()
             return
-        text = (message.text or "").strip()
+        text = _message_html_value(message)
         if not text:
             await message.answer("Текст сообщения не должен быть пустым.")
             return
@@ -376,7 +379,7 @@ def build_admin_broadcast_router(app: AppContext, bot: Bot) -> Router:
         if not _guard(message.from_user.id):
             await state.clear()
             return
-        text = (message.text or "").strip()
+        text = _message_html_value(message)
         if not text:
             await message.answer("Подпись не должна быть пустой.")
             return

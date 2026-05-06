@@ -53,6 +53,9 @@ ORDER_DURATION_DAYS = {
     "capcut_pro_month": 30,
     "capcut_personal_month": 30,
     "chatgpt_trial_3d": 3,
+    "google_ai_pro_gemini": 30,
+    "grok_template": 30,
+    "adobe_template": 120,
 }
 
 ORDER_DURATION_LABELS = {
@@ -62,6 +65,9 @@ ORDER_DURATION_LABELS = {
         "capcut_pro_month": "30 дней",
         "capcut_personal_month": "30 дней",
         "chatgpt_trial_3d": "3 дня",
+        "google_ai_pro_gemini": "30 дней",
+        "grok_template": "30 дней",
+        "adobe_template": "4 месяца",
     },
     "uz": {
         "chatgpt_plus_month": "30 kun",
@@ -69,6 +75,9 @@ ORDER_DURATION_LABELS = {
         "capcut_pro_month": "30 kun",
         "capcut_personal_month": "30 kun",
         "chatgpt_trial_3d": "3 kun",
+        "google_ai_pro_gemini": "30 kun",
+        "grok_template": "30 kun",
+        "adobe_template": "4 oy",
     },
     "en": {
         "chatgpt_plus_month": "30 days",
@@ -76,6 +85,9 @@ ORDER_DURATION_LABELS = {
         "capcut_pro_month": "30 days",
         "capcut_personal_month": "30 days",
         "chatgpt_trial_3d": "3 days",
+        "google_ai_pro_gemini": "30 days",
+        "grok_template": "30 days",
+        "adobe_template": "4 months",
     },
 }
 

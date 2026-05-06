@@ -243,7 +243,7 @@ def completed_orders_markup(orders: list[Order], language: str) -> InlineKeyboar
 def topup_amounts_markup(language: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="80 000 сум", callback_data="topup:amount:80000")],
+            [InlineKeyboardButton(text="50 000 сум", callback_data="topup:amount:50000")],
             [InlineKeyboardButton(text="150 000 сум", callback_data="topup:amount:150000")],
             [InlineKeyboardButton(text="200 000 сум", callback_data="topup:amount:200000")],
             [InlineKeyboardButton(text="✍️ Другая сумма", callback_data="topup:amount:custom")],

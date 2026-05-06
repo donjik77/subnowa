@@ -36,7 +36,7 @@ def _to_decimal(value: Decimal | int | float | str) -> Decimal:
     return Decimal(str(value)).quantize(Decimal("0.01"))
 
 
-MIN_TOPUP_AMOUNT = Decimal("80000.00")
+MIN_TOPUP_AMOUNT = Decimal("50000.00")
 CLICK_QR_IMAGE_PATH = Path(__file__).resolve().parents[1] / "media" / "click.png.jpg"
 
 
@@ -122,7 +122,7 @@ def _topup_amounts_markup_local(language: str) -> InlineKeyboardMarkup:
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=amount_label(80000), callback_data="topup:amount:80000")],
+            [InlineKeyboardButton(text=amount_label(50000), callback_data="topup:amount:50000")],
             [InlineKeyboardButton(text=amount_label(150000), callback_data="topup:amount:150000")],
             [InlineKeyboardButton(text=amount_label(200000), callback_data="topup:amount:200000")],
             [InlineKeyboardButton(text=_topup_other_amount_text(language), callback_data="topup:amount:custom")],
@@ -521,8 +521,8 @@ def build_profile_router(app: AppContext, bot: Bot) -> Router:
         await callback.answer()
         await answer_or_edit(
             callback,
-            "<b>💳 Пополнение баланса</b>\n\nВыберите сумму пополнения:",
-            reply_markup=topup_amounts_markup(language),
+            _topup_start_text(language),
+            reply_markup=_topup_amounts_markup_local(language),
         )
 
     @router.callback_query(F.data.startswith("topup:amount:"))
@@ -535,32 +535,38 @@ def build_profile_router(app: AppContext, bot: Bot) -> Router:
             await callback.answer()
             await answer_or_edit(
                 callback,
-                "Введите сумму пополнения в сумах:",
+                _topup_custom_prompt_text(language),
                 reply_markup=InlineKeyboardMarkup(
-                    inline_keyboard=[[InlineKeyboardButton(text="◀ Назад", callback_data="profile:topup", style="danger")]]
+                    inline_keyboard=[[InlineKeyboardButton(text=_back_text(language), callback_data="profile:topup", style="danger")]]
                 ),
             )
+            return
+        if not amount_token.isdigit() or Decimal(amount_token) < MIN_TOPUP_AMOUNT:
+            await callback.answer(_topup_amount_min_text(language), show_alert=True)
             return
         await state.clear()
         await callback.answer()
         await answer_or_edit(
             callback,
-            f"<b>💳 Выберите способ оплаты</b>\n\nСумма пополнения:\n{int(amount_token):,} сум".replace(",", " "),
-            reply_markup=topup_methods_markup(language, amount_token),
+            _topup_method_select_text(language, amount_token),
+            reply_markup=_topup_methods_markup_local(language, amount_token),
         )
 
     @router.message(UserFlowState.waiting_topup_custom_amount)
     async def topup_custom_amount_handler(message: Message, state: FSMContext) -> None:
         raw_value = (message.text or "").replace(" ", "").strip()
-        if not raw_value.isdigit() or int(raw_value) <= 0:
-            await message.answer("Введите сумму целым числом в сумах.")
-            return
         async with app.session_factory() as session:
             language = await get_user_language(session, message.from_user.id, app.settings.default_language)
+        if not raw_value.isdigit() or int(raw_value) <= 0:
+            await message.answer(_topup_amount_invalid_text(language))
+            return
+        if Decimal(raw_value) < MIN_TOPUP_AMOUNT:
+            await message.answer(_topup_amount_min_text(language))
+            return
         await state.clear()
         await message.answer(
-            f"<b>💳 Выберите способ оплаты</b>\n\nСумма пополнения:\n{int(raw_value):,} сум".replace(",", " "),
-            reply_markup=topup_methods_markup(language, raw_value),
+            _topup_method_select_text(language, raw_value),
+            reply_markup=_topup_methods_markup_local(language, raw_value),
         )
 
     @router.callback_query(F.data.startswith("topup:method:"))
@@ -568,6 +574,9 @@ def build_profile_router(app: AppContext, bot: Bot) -> Router:
         _, _, amount_value, method_code = callback.data.split(":")
         async with app.session_factory() as session:
             language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
+            if not amount_value.isdigit() or Decimal(amount_value) < MIN_TOPUP_AMOUNT:
+                await callback.answer(_topup_amount_min_text(language), show_alert=True)
+                return
             payment_method = await get_payment_method_by_code(session, method_code)
             if payment_method is None:
                 await callback.answer("Способ оплаты не найден.", show_alert=True)

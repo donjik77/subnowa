@@ -521,6 +521,7 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
         {
             "code": "chatgpt_plus_month",
             "category_code": "saas",
+            "status": ProductStatus.ACTIVE.value,
             "service_name": "ChatGPT Pro",
             "product_type": "personal_account",
             "workflow_type": "chatgpt_manual",
@@ -552,6 +553,7 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
         {
             "code": "chatgpt_ready_month",
             "category_code": "saas",
+            "status": ProductStatus.ACTIVE.value,
             "service_name": "ChatGPT Pro",
             "product_type": "ready_access",
             "workflow_type": "inventory_auto",
@@ -582,11 +584,12 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
         {
             "code": "capcut_pro_month",
             "category_code": "saas",
+            "status": ProductStatus.ACTIVE.value,
             "service_name": "CapCut Pro",
             "product_type": "ready_access",
             "workflow_type": "inventory_auto",
             "delivery_type": "auto",
-            "show_in_catalog": True,
+            "show_in_catalog": False,
             "sort_order": 20,
             "default_price": Decimal("49000.00"),
             "replace_prices": set(),
@@ -612,12 +615,13 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
         {
             "code": "capcut_personal_month",
             "category_code": "saas",
+            "status": ProductStatus.ACTIVE.value,
             "service_name": "CapCut Pro",
             "product_type": "personal_account",
             "workflow_type": "manual",
             "delivery_type": "manual",
-            "show_in_catalog": False,
-            "sort_order": 21,
+            "show_in_catalog": True,
+            "sort_order": 20,
             "default_price": Decimal("79000.00"),
             "replace_prices": set(),
             "extra_data": {
@@ -641,30 +645,250 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
         {
             "code": "grok_template",
             "category_code": "saas",
-            "service_name": "Grok",
+            "status": ProductStatus.ACTIVE.value,
+            "service_name": "Super Grok",
             "product_type": "personal_account",
             "workflow_type": "manual",
             "delivery_type": "manual",
             "show_in_catalog": True,
             "sort_order": 40,
-            "default_price": Decimal("0.00"),
+            "default_price": Decimal("70000.00"),
             "replace_prices": set(),
-            "extra_data": {},
-            "translations": {},
+            "extra_data": {
+                "icon_custom_emoji_id": "",
+            },
+            "force_translation_update": True,
+            "translations": {
+                "ru": {
+                    "name": "Super Grok",
+                    "description": (
+                        "👤 Super Grok — Личный доступ\n"
+                        "💰 Цена: 70 000 сум\n"
+                        "📅 Срок доступа: 30 дней\n\n"
+                        "Что вы получаете:\n"
+                        "✅ Доступ к Super Grok на месяц\n"
+                        "✅ Возможность пользоваться AI-инструментами для работы, учёбы и повседневных задач\n"
+                        "✅ Подходит для генерации идей, текстов, анализа информации и продуктивности\n"
+                        "✅ Стабильная работа на весь оплаченный период\n"
+                        "✅ Гарантия 30 дней\n"
+                        "✅ Техническая поддержка 24/7\n\n"
+                        "Этот вариант подойдёт тем, кто хочет использовать Super Grok для быстрых ответов, идей, работы с текстами и удобной помощи в ежедневных задачах."
+                    ),
+                },
+                "uz": {
+                    "name": "Super Grok",
+                    "description": (
+                        "👤 Super Grok — Shaxsiy kirish\n"
+                        "💰 Narxi: 70 000 so‘m\n"
+                        "📅 Foydalanish muddati: 30 kun\n\n"
+                        "Nimalarga ega bo‘lasiz:\n"
+                        "✅ Super Grok’dan 1 oy davomida foydalanish\n"
+                        "✅ Ish, o‘qish va kundalik vazifalar uchun AI vositalaridan foydalanish imkoniyati\n"
+                        "✅ G‘oyalar yaratish, matnlar yozish, ma’lumotlarni tahlil qilish va samaradorlik uchun mos\n"
+                        "✅ To‘langan muddat davomida barqaror ishlash\n"
+                        "✅ 30 kunlik kafolat\n"
+                        "✅ 24/7 texnik yordam\n\n"
+                        "Bu variant Super Grok’dan tezkor javoblar, g‘oyalar, matnlar bilan ishlash va kundalik vazifalarda qulay yordam olish uchun foydalanmoqchi bo‘lganlar uchun mos keladi."
+                    ),
+                },
+                "en": {
+                    "name": "Super Grok",
+                    "description": (
+                        "👤 Super Grok — Personal Access\n"
+                        "💰 Price: 70,000 UZS\n"
+                        "📅 Access period: 30 days\n\n"
+                        "What you get:\n"
+                        "✅ Access to Super Grok for one month\n"
+                        "✅ Ability to use AI tools for work, study, and daily tasks\n"
+                        "✅ Suitable for idea generation, writing, information analysis, and productivity\n"
+                        "✅ Stable access for the full paid period\n"
+                        "✅ 30-day warranty\n"
+                        "✅ 24/7 technical support\n\n"
+                        "This option is suitable for those who want to use Super Grok for quick answers, ideas, working with texts, and convenient help with everyday tasks."
+                    ),
+                },
+            },
         },
         {
             "code": "adobe_template",
             "category_code": "saas",
-            "service_name": "Adobe",
+            "status": ProductStatus.ACTIVE.value,
+            "service_name": "Adobe Creative Cloud",
             "product_type": "personal_account",
             "workflow_type": "manual",
             "delivery_type": "manual",
             "show_in_catalog": True,
             "sort_order": 50,
+            "default_price": Decimal("120000.00"),
+            "replace_prices": set(),
+            "extra_data": {
+                "icon_custom_emoji_id": "5357394595594388140",
+            },
+            "force_translation_update": True,
+            "translations": {
+                "ru": {
+                    "name": "Adobe Creative Cloud",
+                    "description": (
+                        "<tg-emoji emoji-id='5357394595594388140'>🎨</tg-emoji> Adobe Creative Cloud — Личный доступ\n"
+                        "💰 Цена: 120 000 сум\n"
+                        "📅 Срок доступа: 4 месяца\n\n"
+                        "Что вы получаете:\n"
+                        "✅ Доступ к Adobe Creative Cloud для личного использования\n"
+                        "✅ Подходит для дизайна, фото, видео и творческих проектов\n"
+                        "✅ Возможность работать с популярными инструментами Adobe\n"
+                        "✅ Стабильный доступ на весь оплаченный период\n"
+                        "✅ Гарантия на срок использования\n"
+                        "✅ Техническая поддержка 24/7\n\n"
+                        "Этот вариант подойдёт дизайнерам, монтажёрам, SMM-специалистам и всем, кто работает с визуальным контентом и хочет получить удобный доступ к инструментам Adobe без лишних рисков."
+                    ),
+                },
+                "uz": {
+                    "name": "Adobe Creative Cloud",
+                    "description": (
+                        "<tg-emoji emoji-id='5357394595594388140'>🎨</tg-emoji> Adobe Creative Cloud — Shaxsiy kirish\n"
+                        "💰 Narxi: 120 000 so‘m\n"
+                        "📅 Foydalanish muddati: 4 oy\n\n"
+                        "Nimalarga ega bo‘lasiz:\n"
+                        "✅ Shaxsiy foydalanish uchun Adobe Creative Cloud’ga kirish\n"
+                        "✅ Dizayn, foto, video va ijodiy loyihalar uchun mos\n"
+                        "✅ Mashhur Adobe vositalari bilan ishlash imkoniyati\n"
+                        "✅ To‘langan muddat davomida barqaror kirish\n"
+                        "✅ Foydalanish muddati davomida kafolat\n"
+                        "✅ 24/7 texnik yordam\n\n"
+                        "Bu variant dizaynerlar, montajchilar, SMM-mutaxassislar va vizual kontent bilan ishlaydigan, Adobe vositalariga qulay va xavfsiz kirishni xohlaydigan foydalanuvchilar uchun mos keladi."
+                    ),
+                },
+                "en": {
+                    "name": "Adobe Creative Cloud",
+                    "description": (
+                        "<tg-emoji emoji-id='5357394595594388140'>🎨</tg-emoji> Adobe Creative Cloud — Personal Access\n"
+                        "💰 Price: 120,000 UZS\n"
+                        "📅 Access period: 4 months\n\n"
+                        "What you get:\n"
+                        "✅ Access to Adobe Creative Cloud for personal use\n"
+                        "✅ Suitable for design, photo, video, and creative projects\n"
+                        "✅ Ability to work with popular Adobe tools\n"
+                        "✅ Stable access for the full paid period\n"
+                        "✅ Warranty for the access period\n"
+                        "✅ 24/7 technical support\n\n"
+                        "This option is suitable for designers, video editors, SMM specialists, and anyone working with visual content who wants convenient access to Adobe tools without unnecessary risks."
+                    ),
+                },
+            },
+        },
+        {
+            "code": "google_ai_pro_gemini",
+            "category_code": "saas",
+            "status": ProductStatus.ACTIVE.value,
+            "service_name": "Google AI Pro (Gemini)",
+            "product_type": "personal_account",
+            "workflow_type": "manual",
+            "delivery_type": "manual",
+            "show_in_catalog": True,
+            "sort_order": 30,
+            "default_price": Decimal("70000.00"),
+            "replace_prices": set(),
+            "extra_data": {
+                "icon_custom_emoji_id": "5359758030198031389",
+            },
+            "force_translation_update": True,
+            "translations": {
+                "ru": {
+                    "name": "Google AI Pro (Gemini)",
+                    "description": (
+                        "<tg-emoji emoji-id='5359758030198031389'>✨</tg-emoji> Google AI Pro (Gemini) — Личный доступ\n"
+                        "💰 Цена: 70 000 сум\n"
+                        "📅 Срок доступа: 30 дней\n\n"
+                        "Что вы получаете:\n"
+                        "✅ Доступ к Google AI Pro на месяц\n"
+                        "✅ Возможность пользоваться AI-функциями Gemini для работы и учёбы\n"
+                        "✅ Подходит для текстов, поиска идей, планирования и анализа информации\n"
+                        "✅ Стабильная работа на весь оплаченный период\n"
+                        "✅ Гарантия 30 дней\n"
+                        "✅ Техническая поддержка 24/7\n\n"
+                        "Этот вариант подойдёт тем, кто хочет попробовать Google AI Pro или использовать возможности Gemini для конкретных задач в течение месяца."
+                    ),
+                },
+                "uz": {
+                    "name": "Google AI Pro (Gemini)",
+                    "description": (
+                        "<tg-emoji emoji-id='5359758030198031389'>✨</tg-emoji> Google AI Pro (Gemini) — Shaxsiy kirish\n"
+                        "💰 Narxi: 70 000 so‘m\n"
+                        "📅 Foydalanish muddati: 30 kun\n\n"
+                        "Nimalarga ega bo‘lasiz:\n"
+                        "✅ Google AI Pro’dan 1 oy davomida foydalanish\n"
+                        "✅ Ish va o‘qish uchun Gemini AI imkoniyatlaridan foydalanish\n"
+                        "✅ Matnlar, g‘oyalar, rejalashtirish va ma’lumotlarni tahlil qilish uchun mos\n"
+                        "✅ To‘langan muddat davomida barqaror ishlash\n"
+                        "✅ 30 kunlik kafolat\n"
+                        "✅ 24/7 texnik yordam\n\n"
+                        "Bu variant Google AI Pro’ni sinab ko‘rmoqchi bo‘lgan yoki Gemini imkoniyatlaridan bir oy davomida aniq vazifalar uchun foydalanmoqchi bo‘lganlar uchun mos keladi."
+                    ),
+                },
+                "en": {
+                    "name": "Google AI Pro (Gemini)",
+                    "description": (
+                        "<tg-emoji emoji-id='5359758030198031389'>✨</tg-emoji> Google AI Pro (Gemini) — Personal Access\n"
+                        "💰 Price: 70,000 UZS\n"
+                        "📅 Access period: 30 days\n\n"
+                        "What you get:\n"
+                        "✅ Access to Google AI Pro for one month\n"
+                        "✅ Ability to use Gemini AI features for work and study\n"
+                        "✅ Suitable for writing, idea generation, planning, and information analysis\n"
+                        "✅ Stable access for the full paid period\n"
+                        "✅ 30-day warranty\n"
+                        "✅ 24/7 technical support\n\n"
+                        "This option is suitable for those who want to try Google AI Pro or use Gemini features for specific tasks during one month."
+                    ),
+                },
+            },
+        },
+        {
+            "code": "spotify_premium",
+            "category_code": "saas",
+            "status": ProductStatus.ACTIVE.value,
+            "service_name": "Spotify Premium",
+            "product_type": "personal_account",
+            "workflow_type": "manual",
+            "delivery_type": "manual",
+            "show_in_catalog": True,
+            "sort_order": 60,
             "default_price": Decimal("0.00"),
             "replace_prices": set(),
-            "extra_data": {},
-            "translations": {},
+            "extra_data": {
+                "icon_custom_emoji_id": "5346074681004801565",
+                "temporarily_unavailable": True,
+            },
+            "force_translation_update": True,
+            "translations": {
+                "ru": {
+                    "name": "Spotify Premium",
+                    "description": (
+                        "<tg-emoji emoji-id='5346074681004801565'>🎵</tg-emoji> Spotify Premium — Скоро доступно\n"
+                        "📅 Статус: временно недоступен\n\n"
+                        "Spotify Premium временно недоступен.\n"
+                        "Скоро появится в продаже."
+                    ),
+                },
+                "uz": {
+                    "name": "Spotify Premium",
+                    "description": (
+                        "<tg-emoji emoji-id='5346074681004801565'>🎵</tg-emoji> Spotify Premium — Tez orada mavjud bo‘ladi\n"
+                        "📅 Holati: vaqtincha mavjud emas\n\n"
+                        "Spotify Premium hozircha mavjud emas.\n"
+                        "Tez orada sotuvga chiqadi."
+                    ),
+                },
+                "en": {
+                    "name": "Spotify Premium",
+                    "description": (
+                        "<tg-emoji emoji-id='5346074681004801565'>🎵</tg-emoji> Spotify Premium — Coming Soon\n"
+                        "📅 Status: temporarily unavailable\n\n"
+                        "Spotify Premium is temporarily unavailable.\n"
+                        "It will be available soon."
+                    ),
+                },
+            },
         },
     ]
 
@@ -676,6 +900,7 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
             products[item["code"]] = product
 
         product.category = categories.get(item["category_code"])
+        product.status = ProductStatus(item["status"])
         product.service_name = item["service_name"]
         product.product_type = item["product_type"]
         product.workflow_type = item["workflow_type"]
@@ -692,15 +917,16 @@ async def ensure_commerce_products(session: AsyncSession) -> None:
         merged_extra.update(item["extra_data"])
         product.extra_data = merged_extra
 
+        force_translation_update = bool(item.get("force_translation_update"))
         existing = {tr.language.value: tr for tr in product.translations}
         for lang_code, payload in item["translations"].items():
             translation = existing.get(lang_code)
             if translation is None:
                 translation = ProductTranslation(product=product, language=Language(lang_code))
                 session.add(translation)
-            if not translation.name:
+            if force_translation_update or not translation.name:
                 translation.name = payload["name"]
-            if not translation.description:
+            if force_translation_update or not translation.description:
                 translation.description = payload["description"]
 
 
@@ -952,8 +1178,10 @@ async def seed_product_payment_links(session: AsyncSession) -> None:
         "chatgpt_ready_month": ["click", "card", "usdt_trc20"],
         "capcut_pro_month": ["click", "card", "usdt_trc20"],
         "capcut_personal_month": ["click", "card"],
-        "grok_template": ["click", "card", "usdt_trc20"],
-        "adobe_template": ["click", "card", "usdt_trc20"],
+        "google_ai_pro_gemini": ["click", "card"],
+        "grok_template": ["click", "card"],
+        "adobe_template": ["click", "card"],
+        "spotify_premium": [],
     }
 
     for product_code, payment_codes in link_map.items():
@@ -970,3 +1198,14 @@ async def seed_product_payment_links(session: AsyncSession) -> None:
             session.add(link)
             link.sort_order = index * 10
             existing_pairs.add((product.id, payment.id))
+
+    managed_codes = {"google_ai_pro_gemini", "grok_template", "adobe_template", "spotify_premium"}
+    managed_product_ids = {
+        product.id: {payments[code].id for code in link_map[product_code] if code in payments}
+        for product_code in managed_codes
+        if (product := products.get(product_code)) is not None and product.id is not None
+    }
+    for link in list((await session.scalars(select(ProductPaymentMethod))).all()):
+        desired_payment_ids = managed_product_ids.get(link.product_id)
+        if desired_payment_ids is not None and link.payment_method_id not in desired_payment_ids:
+            await session.delete(link)

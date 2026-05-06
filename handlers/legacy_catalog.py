@@ -14,7 +14,7 @@ from db.base import BalanceTransactionType, CheckoutSessionStatus, OrderStatus
 from db.models import BalanceTransaction
 from handlers.common import insufficient_balance_markup, profile_markup, purchase_confirmation_markup
 from services.balance import credit_balance
-from services.catalog import get_product, get_product_by_code, product_type_label, service_name
+from services.catalog import get_product, get_product_by_code, product_description, product_type_label, service_name
 from services.checkout import cancel_checkout_session, claim_checkout_processing, create_checkout_session, get_checkout_session
 from services.context import AppContext
 from services.inventory import count_available_inventory
@@ -628,6 +628,51 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
             reply_markup=build_invoice_markup(language, order.id, payment_methods),
         )
 
+    def _legacy_product_text(product, language: str) -> str:
+        description = (product_description(product, language) or "").strip()
+        if description:
+            return description
+        return f"<b>{escape(service_name(product, language))}</b>"
+
+    def _legacy_product_markup(language: str, product_id: int, *, allow_purchase: bool) -> InlineKeyboardMarkup:
+        rows: list[list[InlineKeyboardButton]] = []
+        if allow_purchase:
+            rows.append([InlineKeyboardButton(text=ui_text(language, "btn_buy_now"), callback_data=f"product:buy:{product_id}", style="success")])
+        rows.append([InlineKeyboardButton(text=ui_text(language, "btn_question"), url=app.settings.support_url)])
+        rows.append(
+            [
+                InlineKeyboardButton(text=ui_text(language, "btn_back"), callback_data="open_subscriptions", style="danger"),
+                InlineKeyboardButton(text=ui_text(language, "btn_menu"), callback_data="menu:main"),
+            ]
+        )
+        return InlineKeyboardMarkup(inline_keyboard=rows)
+
+    async def _show_seeded_product(
+        callback: CallbackQuery,
+        state: FSMContext,
+        *,
+        product_code: str,
+        show_unavailable_alert: bool = False,
+    ) -> None:
+        async with app.session_factory() as session:
+            language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
+            product = await get_product_by_code(session, product_code)
+        await state.clear()
+        if product is None:
+            await callback.answer()
+            await _show_subscriptions(callback, language)
+            return
+        unavailable = bool((product.extra_data or {}).get("temporarily_unavailable"))
+        if show_unavailable_alert or unavailable:
+            await callback.answer(ui_text(language, "spotify_unavailable"), show_alert=True)
+        else:
+            await callback.answer()
+        await answer_or_edit(
+            callback,
+            _legacy_product_text(product, language),
+            reply_markup=_legacy_product_markup(language, product.id, allow_purchase=not unavailable),
+        )
+
     @router.callback_query(F.data.in_({"menu:catalog", "open_subscriptions"}))
     async def open_catalog_handler(callback: CallbackQuery, state: FSMContext) -> None:
         async with app.session_factory() as session:
@@ -638,11 +683,26 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
         await callback.answer()
         await _show_subscriptions(callback, language)
 
+    @router.callback_query(F.data == "open_google_ai_pro")
+    async def open_google_ai_handler(callback: CallbackQuery, state: FSMContext) -> None:
+        await _show_seeded_product(callback, state, product_code="google_ai_pro_gemini")
+
     @router.callback_query(F.data == "open_grok")
-    async def open_grok_handler(callback: CallbackQuery) -> None:
-        async with app.session_factory() as session:
-            language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
-        await callback.answer(ui_text(language, "grok_unavailable"), show_alert=True)
+    async def open_grok_handler(callback: CallbackQuery, state: FSMContext) -> None:
+        await _show_seeded_product(callback, state, product_code="grok_template")
+
+    @router.callback_query(F.data == "open_adobe")
+    async def open_adobe_handler(callback: CallbackQuery, state: FSMContext) -> None:
+        await _show_seeded_product(callback, state, product_code="adobe_template")
+
+    @router.callback_query(F.data == "open_spotify")
+    async def open_spotify_handler(callback: CallbackQuery, state: FSMContext) -> None:
+        await _show_seeded_product(
+            callback,
+            state,
+            product_code="spotify_premium",
+            show_unavailable_alert=True,
+        )
 
     @router.callback_query(F.data.in_({"open_other", "custom:open"}))
     async def open_other_handler(callback: CallbackQuery, state: FSMContext) -> None:
@@ -656,7 +716,11 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
             reply_markup=build_other_menu_markup(language),
         )
 
-    @router.callback_query(F.data.in_({"other_adobe", "other_games", "other_telegram", "other_yandex", "other_music", "other_custom_own"}))
+    @router.callback_query(F.data == "other_adobe")
+    async def other_adobe_handler(callback: CallbackQuery, state: FSMContext) -> None:
+        await open_adobe_handler(callback, state)
+
+    @router.callback_query(F.data.in_({"other_games", "other_telegram", "other_yandex", "other_music", "other_custom_own"}))
     async def other_request_handler(callback: CallbackQuery, state: FSMContext) -> None:
         async with app.session_factory() as session:
             language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
@@ -697,15 +761,7 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
 
     @router.callback_query(F.data == "open_capcut")
     async def open_capcut_handler(callback: CallbackQuery, state: FSMContext) -> None:
-        async with app.session_factory() as session:
-            language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
-        await state.clear()
-        await callback.answer()
-        await answer_or_edit(
-            callback,
-            ui_text(language, "capcut_menu_text"),
-            reply_markup=build_capcut_selector_markup(language),
-        )
+        await capcut_personal_handler(callback, state)
 
     @router.callback_query(F.data == "capcut_locked")
     async def capcut_locked_handler(callback: CallbackQuery) -> None:
@@ -746,16 +802,7 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
 
     @router.callback_query(F.data == "capcut_ready")
     async def capcut_ready_handler(callback: CallbackQuery, state: FSMContext) -> None:
-        async with app.session_factory() as session:
-            language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
-            product = await get_product_by_code(session, "capcut_pro_month")
-        await state.clear()
-        await callback.answer()
-        await answer_or_edit(
-            callback,
-            capcut_ready_text(language, product.price if product else 49000),
-            reply_markup=build_capcut_details_markup(language, "capcut_ready"),
-        )
+        await capcut_personal_handler(callback, state)
 
     @router.callback_query(F.data.in_({"multi_chatgpt", "multi_capcut"}))
     async def multi_start_handler(callback: CallbackQuery, state: FSMContext) -> None:
@@ -1019,21 +1066,7 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
 
     @router.callback_query(F.data == "buy_capcut_ready")
     async def buy_capcut_ready_handler(callback: CallbackQuery, state: FSMContext) -> None:
-        async with app.session_factory() as session:
-            language = await get_user_language(session, callback.from_user.id, app.settings.default_language)
-            product = await get_product_by_code(session, "capcut_pro_month")
-            if product is None:
-                await callback.answer()
-                return
-        await _start_balance_checkout(
-            callback,
-            state,
-            app,
-            product=product,
-            language=language,
-            back_callback="capcut_ready",
-            alternate_callback="capcut_personal",
-        )
+        await buy_capcut_personal_handler(callback, state)
 
     @router.callback_query(F.data == "buy_capcut_personal")
     async def buy_capcut_personal_handler(callback: CallbackQuery, state: FSMContext) -> None:
@@ -1189,6 +1222,14 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
         if product.code == "capcut_personal_month":
             await capcut_personal_handler(callback, state)
             return
+        if product.code in {"google_ai_pro_gemini", "grok_template", "adobe_template", "spotify_premium"}:
+            await _show_seeded_product(
+                callback,
+                state,
+                product_code=product.code,
+                show_unavailable_alert=product.code == "spotify_premium",
+            )
+            return
         await open_catalog_handler(callback, state)
 
     @router.callback_query(F.data == "product:trial")
@@ -1230,6 +1271,14 @@ def build_catalog_router(app: AppContext, bot: Bot) -> Router:
                 return
             if product.code == "capcut_personal_month":
                 await buy_capcut_personal_handler(callback, state)
+                return
+            if (product.extra_data or {}).get("temporarily_unavailable"):
+                await callback.answer(ui_text(language, "spotify_unavailable"), show_alert=True)
+                await answer_or_edit(
+                    callback,
+                    _legacy_product_text(product, language),
+                    reply_markup=_legacy_product_markup(language, product.id, allow_purchase=False),
+                )
                 return
             if user is None:
                 await callback.answer()

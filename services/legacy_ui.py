@@ -12,6 +12,8 @@ EMOJI_ID_CHATGPT = "5359726582447487916"
 EMOJI_ID_CAPCUT = "5364339557712020484"
 EMOJI_ID_GROK = "5330337435500951363"
 EMOJI_ID_ADOBE = "5357394595594388140"
+EMOJI_ID_GOOGLE_AI = "5359758030198031389"
+EMOJI_ID_SPOTIFY = "5346074681004801565"
 EMOJI_ID_TELEGRAM = "5424972470023104089"
 
 PAYMENT_CODE_ORDER = ("click", "card", "usdt_trc20")
@@ -87,7 +89,10 @@ PRICE_HINTS = {
         "btn_menu": "🏠 Menyu",
         "btn_chatgpt": "ChatGPT Plus/Pro",
         "btn_capcut": "CapCut Pro",
+        "btn_google_ai": "Google AI Pro (Gemini)",
         "btn_grok": "Super Grok",
+        "btn_adobe": "Adobe Creative Cloud",
+        "btn_spotify": "Spotify Premium",
         "btn_other": "Boshqa",
         "btn_buy": "Rasmiylashtirish",
         "btn_use_this_gmail": "Shu Gmail",
@@ -105,6 +110,7 @@ PRICE_HINTS = {
         "btn_cancel": "Bekor qilish",
         "other_games": "O‘yin qiymatlari",
         "other_music": "Musiqa",
+        "spotify_unavailable": "Spotify Premium hozircha mavjud emas.\nTez orada sotuvga chiqadi.",
         "multi_chatgpt_service": "ChatGPT Plus",
         "multi_capcut_service": "CapCut Pro",
     },
@@ -144,7 +150,10 @@ PRICE_HINTS = {
         "btn_menu": "🏠 Menu",
         "btn_chatgpt": "ChatGPT Plus/Pro",
         "btn_capcut": "CapCut Pro",
+        "btn_google_ai": "Google AI Pro (Gemini)",
         "btn_grok": "Super Grok",
+        "btn_adobe": "Adobe Creative Cloud",
+        "btn_spotify": "Spotify Premium",
         "btn_other": "Other",
         "btn_buy": "Proceed",
         "btn_use_this_gmail": "Use this",
@@ -162,6 +171,7 @@ PRICE_HINTS = {
         "btn_cancel": "Cancel",
         "other_games": "Game values",
         "other_music": "Music",
+        "spotify_unavailable": "Spotify Premium is temporarily unavailable.\nIt will be available soon.",
         "multi_chatgpt_service": "ChatGPT Plus",
         "multi_capcut_service": "CapCut Pro",
     },
@@ -293,7 +303,10 @@ TEXTS = {
         "btn_menu": "🏠 Меню",
         "btn_chatgpt": "ChatGPT Plus/Pro",
         "btn_capcut": "CapCut Pro",
+        "btn_google_ai": "Google AI Pro (Gemini)",
         "btn_grok": "Super Grok",
+        "btn_adobe": "Adobe Creative Cloud",
+        "btn_spotify": "Spotify Premium",
         "btn_other": "Другое",
         "btn_buy": "Оформить",
         "btn_use_this_gmail": "На этот",
@@ -311,6 +324,7 @@ TEXTS = {
         "btn_cancel": "Отменить",
         "other_games": "Игровые ценности",
         "other_music": "Музыка",
+        "spotify_unavailable": "Spotify Premium временно недоступен.\nСкоро появится в продаже.",
         "multi_chatgpt_service": "ChatGPT Plus",
         "multi_capcut_service": "CapCut Pro",
     },
@@ -382,14 +396,26 @@ for language_code, title_updates in {
     "ru": {
         "capcut_pro_month": "CapCut Pro — Готовый аккаунт",
         "capcut_personal_month": "CapCut Pro — Личный аккаунт",
+        "google_ai_pro_gemini": "Google AI Pro (Gemini)",
+        "grok_template": "Super Grok",
+        "adobe_template": "Adobe Creative Cloud",
+        "spotify_premium": "Spotify Premium",
     },
     "uz": {
         "capcut_pro_month": "CapCut Pro — Tayyor akkaunt",
         "capcut_personal_month": "CapCut Pro — Shaxsiy akkaunt",
+        "google_ai_pro_gemini": "Google AI Pro (Gemini)",
+        "grok_template": "Super Grok",
+        "adobe_template": "Adobe Creative Cloud",
+        "spotify_premium": "Spotify Premium",
     },
     "en": {
         "capcut_pro_month": "CapCut Pro — Ready account",
         "capcut_personal_month": "CapCut Pro — Personal account",
+        "google_ai_pro_gemini": "Google AI Pro (Gemini)",
+        "grok_template": "Super Grok",
+        "adobe_template": "Adobe Creative Cloud",
+        "spotify_premium": "Spotify Premium",
     },
 }.items():
     PRODUCT_TITLES.setdefault(language_code, {}).update(title_updates)
@@ -757,8 +783,11 @@ def build_subscriptions_markup(language: str | None) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [InlineKeyboardButton(text=text(language, "btn_chatgpt"), callback_data="open_chatgpt", icon_custom_emoji_id=EMOJI_ID_CHATGPT)],
             [InlineKeyboardButton(text=text(language, "btn_capcut"), callback_data="open_capcut", icon_custom_emoji_id=EMOJI_ID_CAPCUT)],
-            [InlineKeyboardButton(text=text(language, "btn_grok"), callback_data="open_grok", icon_custom_emoji_id=EMOJI_ID_GROK)],
-            [InlineKeyboardButton(text=text(language, "btn_other"), callback_data="open_other", icon_custom_emoji_id=EMOJI_ID_ADOBE)],
+            [InlineKeyboardButton(text=text(language, "btn_google_ai"), callback_data="open_google_ai_pro", icon_custom_emoji_id=EMOJI_ID_GOOGLE_AI)],
+            [InlineKeyboardButton(text=text(language, "btn_grok"), callback_data="open_grok")],
+            [InlineKeyboardButton(text=text(language, "btn_adobe"), callback_data="open_adobe", icon_custom_emoji_id=EMOJI_ID_ADOBE)],
+            [InlineKeyboardButton(text=text(language, "btn_spotify"), callback_data="open_spotify", icon_custom_emoji_id=EMOJI_ID_SPOTIFY)],
+            [InlineKeyboardButton(text=text(language, "btn_other"), callback_data="open_other")],
             [InlineKeyboardButton(text=text(language, "btn_back"), callback_data="menu:main", style="danger")],
         ]
     )
@@ -797,7 +826,7 @@ def build_capcut_menu_markup(language: str | None, support_url: str, price_uzs: 
 def build_other_menu_markup(language: str | None) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Adobe Cloud", callback_data="other_adobe", icon_custom_emoji_id=EMOJI_ID_ADOBE)],
+            [InlineKeyboardButton(text=text(language, "btn_adobe"), callback_data="open_adobe", icon_custom_emoji_id=EMOJI_ID_ADOBE)],
             [InlineKeyboardButton(text=text(language, "other_games"), callback_data="other_games")],
             [InlineKeyboardButton(text="Telegram Premium", callback_data="other_telegram", icon_custom_emoji_id=EMOJI_ID_TELEGRAM)],
             [InlineKeyboardButton(text="Yandex Go", callback_data="other_yandex")],
@@ -897,11 +926,12 @@ def build_capcut_selector_markup(language: str | None) -> InlineKeyboardMarkup:
 
 
 def build_capcut_details_markup(language: str | None, product_key: str) -> InlineKeyboardMarkup:
+    back_callback = "open_subscriptions" if product_key == "capcut_personal" else "open_capcut"
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=text(language, "btn_buy_now"), callback_data=f"buy_{product_key}", style="success")],
             [
-                InlineKeyboardButton(text=text(language, "btn_back"), callback_data=f"back_to_{product_key}", style="danger"),
+                InlineKeyboardButton(text=text(language, "btn_back"), callback_data=back_callback, style="danger"),
                 InlineKeyboardButton(text=text(language, "btn_menu"), callback_data="menu:main"),
             ],
         ]
