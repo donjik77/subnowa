@@ -59,7 +59,7 @@ CLICK_QR_IMAGE_PATH = Path(__file__).resolve().parents[1] / "media" / "click.png
 PROMO_CODE_SUBNOWAPRO = "subnowapro"
 PROMO_CODE_SUBNOWAPRO_SOURCE = "promo_code"
 PROMO_CODE_SUBNOWAPRO_SOURCE_ID = 1
-PROMO_CODE_SUBNOWAPRO_BONUS = Decimal("20000.00")
+PROMO_CODE_SUBNOWAPRO_BONUS = Decimal("70000.00")
 
 
 def _is_valid_gmail(value: str) -> bool:
@@ -113,7 +113,7 @@ def _promo_success_text(language: str, new_balance) -> str:
     if language == "uz":
         return (
             "✅ Promokod faollashtirildi\n\n"
-            "💰 Balansingizga 20 000 so'm qo'shildi\n"
+            "💰 Balansingizga 70 000 so'm qo'shildi\n"
             f"💳 Yangi balans: {balance_text}"
         )
     if language == "en":
