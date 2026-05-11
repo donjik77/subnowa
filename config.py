@@ -239,7 +239,8 @@ def load_settings() -> Settings:
     _load_env()
 
     bot_token = os.getenv("BOT_TOKEN", "").strip()
-    database_url "postgresql://postgres:NTeIayOsBgwxMbFUtLrgjLttWeRmHtnL@postgres-dbx9.railway.internal:5432/railway"
+    database_url = os.getenv("DATABASE_URL", "").strip()
+
 
     if not bot_token:
         raise RuntimeError("BOT_TOKEN is required")
